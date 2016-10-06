@@ -58,9 +58,9 @@ This guide will use the following VPC configuration for illustrative purposes:
   
   ```
 * Edit the following variables to match your settings  
-  - **LOCAL_NET** - VPC 1 network segment (10.0.0.0/16 for this example)
-  - **REMOTE_NET** - VPC 2 network segment (172.16.0.0/16 for this example)
-  - **REMOTE_EIP** - VPC 2 EIP
+  - **LOCAL_NET** - VPC 1 CIDR (10.0.0.0/16 for this example)
+  - **REMOTE_NET** - VPC 2 CIDR (172.16.0.0/16 for this example)
+  - **REMOTE_EIP** - EIP2
 * Configure vpn.sh to be started by cron at boot  
   ```
   Prompt> echo '@reboot /root/vpn.sh >> /var/log/vpn.log' | crontab
