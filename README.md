@@ -5,21 +5,15 @@ AWS cross-region VPC to VPC connection by SSH tunnel
 
 This guide will use the following VPC configuration for illustrative purposes:
 
-![](http://awsmedia.s3.amazonaws.com/articles/connecting-multiple-vpcs-with-ec2-instances/example_vpc_setup.jpg)
+![](fig01.png)
 
 
 ## To launch Amazon EC2 VPN instances
 
 1. Launch two Amazon Linux instances, one in each VPC public subnet, with the following characteristics:
-  1. Assign the VPN instance a static private IP address (not required, but makes setting up the configure files much easier). In this example we will use 10.0.0.5 and 172.16.0.5.
-  * Allocate two VPC EIPs (or one VPC EIP in each region) and associate an EIP to each VPN instance. In this example we will use EIP1 and EIP2 to represent the EIPs for VPC 1 and VPC 2 respectively.
+  1. Allocate two VPC EIPs and associate an EIP to each VPN instance.
 * Disable Source/Dest checking on both instances by right-clicking on the instances and selecting Change Source/Dest. Check.  
-  ![](http://awsmedia.s3.amazonaws.com/articles/connecting-multiple-vpcs-with-ec2-instances/change_source_dest_check.jpg)
 * Configure Routing Tables in both VPCs to send traffic to the "other" VPC through the VPC EC2 instances.  
-  VPC #1 Main Route Table  
-    ![](http://awsmedia.s3.amazonaws.com/articles/connecting-multiple-vpcs-with-ec2-instances/vpc_main_route_table.jpg)  
-  VPC #2 Main Route Table  
-    ![](http://awsmedia.s3.amazonaws.com/articles/connecting-multiple-vpcs-with-ec2-instances/vpc_main_route_table_2.jpg)  
 
 ## To configure sshd config on Amazon EC2 instances
 1. Connect to each EC2 VPN Instance and su as root  
@@ -45,7 +39,7 @@ This guide will use the following VPC configuration for illustrative purposes:
   ```  
 
 ## Download and configure the vpn.sh script
-1. Connect to VPC 1 VPN Instance and su as root  
+1. Connect to VPC #1 VPN Instance and su as root  
   ```  
   Prompt> sudo su -  
   
@@ -58,9 +52,9 @@ This guide will use the following VPC configuration for illustrative purposes:
   
   ```
 * Edit the following variables to match your settings  
-  - **LOCAL_NET** - VPC 1 CIDR (10.0.0.0/16 for this example)
-  - **REMOTE_NET** - VPC 2 CIDR (172.16.0.0/16 for this example)
-  - **REMOTE_EIP** - EIP2
+  - **LOCAL_NET** - VPC #1 CIDR (10.0.1.0/24 for this example)
+  - **REMOTE_NET** - VPC #2 CIDR (10.0.2.0/24 for this example)
+  - **REMOTE_EIP** - EIP #2
 * Configure vpn.sh to be started by cron at boot  
   ```
   Prompt> echo '@reboot /root/vpn.sh >> /var/log/vpn.log' | crontab
@@ -75,11 +69,16 @@ This guide will use the following VPC configuration for illustrative purposes:
   ```  
 
 ## Test VPN status
-1. Connect to VPC 1 VPN Instance and ping VPC 2 VPN Instance
+1. Connect to VPC #1 VPN Instance and ping VPC #2 VPN Instance
   ```  
-  Prompt> ping 172.16.0.5
+  Prompt> ping 10.0.2.23
   
   ```  
+
+## Appendix: High availability AWS VPC to VPC cross-region VPN by SSH tunnel 
+Creating a fully redundant VPC connection between VPCs in two regions requires the setup and configuration of four VPN instances.  
+Please refer to: https://github.com/eric6239/ha-vpn-vpcs
+
 
 ## Reference
 
